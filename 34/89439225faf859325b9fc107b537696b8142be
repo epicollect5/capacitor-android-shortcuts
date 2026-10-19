@@ -1,0 +1,58 @@
+README.md
+  h_2231ff2aa93473 1,3-16,39,46,99-111,131,136,144,149,157,162-166,174,183-222,229,239,247,252-253,273-275
+android/build.gradle
+  h_2231ff2aa93473 3-5,14,22,25
+android/gradle/wrapper/gradle-wrapper.properties
+  h_2231ff2aa93473 3
+android/src/main/java/nepheus/capacitor/androidshortcuts/AndroidShortcuts.java
+  h_2231ff2aa93473 20-21,47,49-50,52-59,61-63,65-75,78-107,127-155,161,183,191
+android/src/main/java/nepheus/capacitor/androidshortcuts/AndroidShortcutsPlugin.java
+  h_2231ff2aa93473 6,14-15,24-42,76-123,164-170,172-183
+dist/docs.json
+  h_2231ff2aa93473 1-246
+dist/esm/definitions.d.ts
+  h_2231ff2aa93473 1-97
+dist/esm/definitions.js
+  h_2231ff2aa93473 1-2
+dist/esm/definitions.js.map
+  h_2231ff2aa93473 1
+dist/esm/index.d.ts
+  h_2231ff2aa93473 1-4
+dist/esm/index.js
+  h_2231ff2aa93473 1-7
+dist/esm/index.js.map
+  h_2231ff2aa93473 1
+dist/esm/web.d.ts
+  h_2231ff2aa93473 1-29
+dist/esm/web.js
+  h_2231ff2aa93473 1-38
+dist/esm/web.js.map
+  h_2231ff2aa93473 1
+dist/plugin.cjs.js
+  h_2231ff2aa93473 1-52
+dist/plugin.cjs.js.map
+  h_2231ff2aa93473 1
+dist/plugin.js
+  h_2231ff2aa93473 1-55
+dist/plugin.js.map
+  h_2231ff2aa93473 1
+package-lock.json
+  h_2231ff2aa93473 1-4501
+package.json
+  h_2231ff2aa93473 2-3,18,21,43-44,56
+src/definitions.ts
+  h_2231ff2aa93473 62-79
+src/web.ts
+  h_2231ff2aa93473 23-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3489439225faf859325b9fc107b537696b8142be",
+  "prompts": {},
+  "humans": {
+    "h_2231ff2aa93473": {
+      "author": "Mirko <mirko.menegazzo@gmail.com>"
+    }
+  }
+}
