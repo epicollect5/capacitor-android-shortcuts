@@ -167,7 +167,14 @@ public class AndroidShortcuts {
 
         try {
             if (shortcutIcon.getType().equals(ShortcutIconEnum.Bitmap)) {
-                return Icon.createWithBitmap(decodeBase64Bitmap(shortcutIcon.getName()));
+                Bitmap bitmap = decodeBase64Bitmap(shortcutIcon.getName());
+                //an adaptive bitmap lets the launcher apply its own mask (circle,
+                //squircle, rounded square...) instead of drawing the raw square.
+                //adaptive icons need API 26, so older devices keep the plain bitmap
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    return Icon.createWithAdaptiveBitmap(bitmap);
+                }
+                return Icon.createWithBitmap(bitmap);
             } else if (shortcutIcon.getType().equals(ShortcutIconEnum.Resource)) {
                 Resources activityRes = bridge.getContext().getResources();
                 String activityPackage = bridge.getActivity().getPackageName();
