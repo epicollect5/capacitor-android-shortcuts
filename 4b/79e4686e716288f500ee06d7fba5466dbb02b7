@@ -1,0 +1,14 @@
+android/src/main/java/nepheus/capacitor/androidshortcuts/AndroidShortcuts.java
+  h_2231ff2aa93473 170-177
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4b79e4686e716288f500ee06d7fba5466dbb02b7",
+  "prompts": {},
+  "humans": {
+    "h_2231ff2aa93473": {
+      "author": "Mirko <mirko.menegazzo@gmail.com>"
+    }
+  }
+}
