@@ -60,6 +60,24 @@ export interface AndroidShortcutsPlugin {
    */
   pin(options: ShortcutItem): Promise<void>;
   /**
+   * Update already published shortcuts, keeping the same IDs.
+   * Shortcuts that are not published yet are ignored by the system.
+   * @param options An items array with the options of each shortcut
+   */
+  update(options: { items: ShortcutItem[] }): Promise<void>;
+  /**
+   * Disable already published shortcuts.
+   * Disabled shortcuts are greyed out by the launcher, which offers the user
+   * the chance to remove them. Pinned shortcuts cannot be removed
+   * programmatically, so this is the closest removal the platform allows.
+   * @param options An option object with the IDs of the shortcuts to disable
+   * and the message shown by the launcher when one of them is tapped
+   */
+  disable(options: {
+    ids: string[];
+    message?: string;
+  }): Promise<void>;
+  /**
    * Add a listener to a shortcut tap event
    * @param eventName
    * @param listenerFunc

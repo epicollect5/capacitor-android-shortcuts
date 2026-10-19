@@ -10,7 +10,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Icon;
-import android.os.Build;
 import android.util.Base64;
 
 import androidx.annotation.RequiresApi;
@@ -18,6 +17,8 @@ import com.getcapacitor.Bridge;
 import com.getcapacitor.JSArray;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -43,6 +44,89 @@ public class AndroidShortcuts {
 
         ShortcutManager shortcutManager = bridge.getContext().getSystemService(ShortcutManager.class);
 
+        ArrayList<ShortcutInfo> shortcuts = this.buildShortcuts(bridge, items);
+
+        shortcutManager.setDynamicShortcuts(shortcuts);
+    }
+
+    /**
+     * Updates already published shortcuts, keeping their IDs.
+     * Shortcuts which are not published yet are ignored by the system.
+     */
+    public void update(Bridge bridge, JSArray items) throws PackageManager.NameNotFoundException, JSONException {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.N_MR1) {
+            throw new UnsupportedOperationException("Dynamic shortcuts are not supported on this device");
+        }
+
+        ShortcutManager shortcutManager = bridge.getContext().getSystemService(ShortcutManager.class);
+
+        ArrayList<ShortcutInfo> shortcuts = this.buildShortcuts(bridge, items);
+
+        shortcutManager.updateShortcuts(shortcuts);
+    }
+
+    /**
+     * Disables the given shortcuts, so the launcher greys them out and offers
+     * the user the chance to remove them. Pinned shortcuts cannot be removed
+     * programmatically, so disabling is the closest the platform allows.
+     */
+    public void disable(Bridge bridge, List<String> ids, String message) {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.N_MR1) {
+            throw new UnsupportedOperationException("Dynamic shortcuts are not supported on this device");
+        }
+
+        ShortcutManager shortcutManager = bridge.getContext().getSystemService(ShortcutManager.class);
+
+        //disableShortcuts() rejects the whole batch if any ID is unknown to the
+        //system (e.g. the shortcut was never pinned, or the user already removed
+        //it), so only pass the IDs the system still knows about
+        List<String> existingIds = new ArrayList<String>();
+        List<ShortcutInfo> publishedShortcuts = new ArrayList<ShortcutInfo>();
+        publishedShortcuts.addAll(shortcutManager.getDynamicShortcuts());
+        publishedShortcuts.addAll(shortcutManager.getPinnedShortcuts());
+        for (ShortcutInfo shortcut : publishedShortcuts) {
+            if (ids.contains(shortcut.getId()) && !existingIds.contains(shortcut.getId())) {
+                existingIds.add(shortcut.getId());
+            }
+        }
+
+        if (existingIds.isEmpty()) {
+            return;
+        }
+
+        shortcutManager.disableShortcuts(existingIds, message);
+
+        //Pinned shortcuts are not removed by this call; dynamic ones are.
+        //IDs which only exist as pinned shortcuts are not dynamic shortcuts,
+        //which the platform rejects as a whole batch: the disable above has
+        //already been applied, so that rejection must not fail the call.
+        try {
+            shortcutManager.removeDynamicShortcuts(existingIds);
+        } catch (IllegalArgumentException e) {
+            //no dynamic shortcut for (at least) one of the IDs: nothing to remove
+        }
+    }
+
+    public void pin(Bridge bridge, String id, String shortLabel, String longLabel, Icon icon, String data)
+        throws UnsupportedOperationException {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) {
+            throw new UnsupportedOperationException("Pinned shortcuts are not supported on this device");
+        }
+
+        ShortcutManager shortcutManager = bridge.getContext().getSystemService(ShortcutManager.class);
+
+        if (!shortcutManager.isRequestPinShortcutSupported()) {
+            throw new UnsupportedOperationException("Pinned shortcuts are not supported on this device");
+        }
+
+        ShortcutInfo shortcut = buildShortcut(bridge, id, shortLabel, longLabel, icon, data);
+
+        shortcutManager.requestPinShortcut(shortcut, null);
+    }
+
+    @RequiresApi(api = android.os.Build.VERSION_CODES.M)
+    private ArrayList<ShortcutInfo> buildShortcuts(Bridge bridge, JSArray items)
+        throws PackageManager.NameNotFoundException, JSONException {
         int count = items.length();
         ArrayList<ShortcutInfo> shortcuts = new ArrayList<ShortcutInfo>(count);
 
@@ -63,28 +147,10 @@ public class AndroidShortcuts {
 
             Icon icon = this.generateIcon(bridge, shortcutIcon);
 
-            ShortcutInfo shortcut = buildShortcut(bridge, id, shortLabel, longLabel, icon, data);
-            shortcuts.add(shortcut);
+            shortcuts.add(buildShortcut(bridge, id, shortLabel, longLabel, icon, data));
         }
 
-        shortcutManager.setDynamicShortcuts(shortcuts);
-    }
-
-    public void pin(Bridge bridge, String id, String shortLabel, String longLabel, Icon icon, String data)
-        throws UnsupportedOperationException {
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) {
-            throw new UnsupportedOperationException("Pinned shortcuts are not supported on this device");
-        }
-
-        ShortcutManager shortcutManager = bridge.getContext().getSystemService(ShortcutManager.class);
-
-        if (!shortcutManager.isRequestPinShortcutSupported()) {
-            throw new UnsupportedOperationException("Pinned shortcuts are not supported on this device");
-        }
-
-        ShortcutInfo shortcut = buildShortcut(bridge, id, shortLabel, longLabel, icon, data);
-
-        shortcutManager.requestPinShortcut(shortcut, null);
+        return shortcuts;
     }
 
     /**
@@ -92,7 +158,7 @@ public class AndroidShortcuts {
      * @param shortcutIcon parameter of the icon that should be set
      * @return
      */
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    @RequiresApi(api = android.os.Build.VERSION_CODES.M)
     public Icon generateIcon(
             Bridge bridge, ShortcutIcon shortcutIcon) throws PackageManager.NameNotFoundException {
         if (shortcutIcon == null) {
@@ -114,7 +180,7 @@ public class AndroidShortcuts {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    @RequiresApi(api = android.os.Build.VERSION_CODES.M)
     private Icon getDefaultIcon(Bridge bridge) throws PackageManager.NameNotFoundException {
         Context context = bridge.getContext();
         PackageManager pm = context.getPackageManager();
@@ -122,7 +188,7 @@ public class AndroidShortcuts {
         return Icon.createWithResource(bridge.getActivity().getPackageName(), applicationInfo.icon);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
+    @RequiresApi(api = android.os.Build.VERSION_CODES.N_MR1)
     private ShortcutInfo buildShortcut(
         Bridge bridge,
         String id,

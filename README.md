@@ -1,7 +1,19 @@
-[![npm version](https://badge.fury.io/js/capacitor-android-shortcuts.svg)](https://badge.fury.io/js/capacitor-android-shortcuts)
-[![capacitor support](https://img.shields.io/badge/capacitor%20support-v7-brightgreen?logo=capacitor)](https://capacitorjs.com/)
+[![capacitor support](https://img.shields.io/badge/capacitor%20support-v8-brightgreen?logo=capacitor)](https://capacitorjs.com/)
 
-# capacitor-android-shortcuts
+# capacitor-android-shortcuts (Epicollect5 fork)
+
+Fork of [NePheus/capacitor-android-shortcuts](https://github.com/NePheus/capacitor-android-shortcuts), upgraded to Capacitor 8. Install it from the fork, pinned to a commit hash:
+
+```bash
+npm install github:epicollect5/capacitor-android-shortcuts#<commit-sha>
+```
+
+Changes over upstream:
+
+- Capacitor 8 (`@capacitor/core`/`@capacitor/android` `^8`).
+- Cold-start tap delivery: the launch intent is read in `load()` and retained until the JS `shortcut` listener subscribes, so a tap that starts the app is delivered too (upstream only handled `handleOnNewIntent`).
+- `update({ items })`: updates published shortcuts in place via `updateShortcuts`, keeping the same IDs.
+- `disable({ ids, message })`: disables published shortcuts via `disableShortcuts` and removes any dynamic shortcut with the same IDs. Pinned shortcuts cannot be removed programmatically, so the launcher greys them out and offers the user the chance to remove them.
 
 This plugin provides the feature to add dynamic and pinned shortcuts in Android apps. See more [in the Android docs](https://developer.android.com/guide/topics/ui/shortcuts). Its possible to listen to a shortcut tap action with an event listener (see `Usage`).
 
@@ -24,14 +36,14 @@ You can add a pinned shortcut programmatically inside your app, i.e. let a custo
 ## Install
 
 ```bash
-npm install capacitor-android-shortcuts
+npm install github:epicollect5/capacitor-android-shortcuts#<commit-sha>
 npx cap sync android
 ```
 
 ## Usage
 
 ```javascript
-import { AndroidShortcuts } from 'capacitor-android-shortcuts';
+import { AndroidShortcuts } from '@epicollect5/capacitor-android-shortcuts';
 
 ...
 
@@ -84,7 +96,19 @@ AndroidShortcuts.isPinnedSupported().then(({ result }) => {
     }
 });
 
-// Triggered when app is launched by a shortcut
+// Update published shortcuts in place (same IDs)
+AndroidShortcuts.update({
+    items: [ /* same shape as setDynamic */ ],
+});
+
+// Disable published shortcuts: pinned icons stay on the Home screen
+// (the platform does not allow removing them) but are greyed out
+AndroidShortcuts.disable({
+    ids: ["mypinnedid"],
+    message: "This project is no longer available",
+});
+
+// Triggered when the app is opened by a shortcut, cold start included
 AndroidShortcuts.addListener('shortcut', (response: any) => {
   // response.data contains the content of the 'data' property of the created shortcut
 });
@@ -104,12 +128,12 @@ See [Wiki: Icon examples](https://github.com/NePheus/capacitor-android-shortcuts
 ### isDynamicSupported()
 
 ```typescript
-isDynamicSupported() => Promise<{ result: boolean; }>
+isDynamicSupported() => any
 ```
 
 Checks if dynamic shortcuts are supported on the device
 
-**Returns:** <code>Promise&lt;{ result: boolean; }&gt;</code>
+**Returns:** <code>any</code>
 
 --------------------
 
@@ -117,12 +141,12 @@ Checks if dynamic shortcuts are supported on the device
 ### isPinnedSupported()
 
 ```typescript
-isPinnedSupported() => Promise<{ result: boolean; }>
+isPinnedSupported() => any
 ```
 
 Checks if pinned shortcuts are supported on the device
 
-**Returns:** <code>Promise&lt;{ result: boolean; }&gt;</code>
+**Returns:** <code>any</code>
 
 --------------------
 
@@ -130,14 +154,16 @@ Checks if pinned shortcuts are supported on the device
 ### setDynamic(...)
 
 ```typescript
-setDynamic(options: { items: ShortcutItem[]; }) => Promise<void>
+setDynamic(options: { items: ShortcutItem[]; }) => any
 ```
 
 Set dynamic shortcuts
 
-| Param         | Type                                    | Description                                      |
-| ------------- | --------------------------------------- | ------------------------------------------------ |
-| **`options`** | <code>{ items: ShortcutItem[]; }</code> | An items array with the options of each shortcut |
+| Param         | Type                        | Description                                      |
+| ------------- | --------------------------- | ------------------------------------------------ |
+| **`options`** | <code>{ items: {}; }</code> | An items array with the options of each shortcut |
+
+**Returns:** <code>any</code>
 
 --------------------
 
@@ -145,7 +171,7 @@ Set dynamic shortcuts
 ### pin(...)
 
 ```typescript
-pin(options: ShortcutItem) => Promise<void>
+pin(options: ShortcutItem) => any
 ```
 
 Add a pinned shortcut
@@ -154,13 +180,53 @@ Add a pinned shortcut
 | ------------- | ----------------------------------------------------- | ---------------------------------------- |
 | **`options`** | <code><a href="#shortcutitem">ShortcutItem</a></code> | An option object for the pinned shortcut |
 
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### update(...)
+
+```typescript
+update(options: { items: ShortcutItem[]; }) => any
+```
+
+Update already published shortcuts, keeping the same IDs.
+Shortcuts that are not published yet are ignored by the system.
+
+| Param         | Type                        | Description                                      |
+| ------------- | --------------------------- | ------------------------------------------------ |
+| **`options`** | <code>{ items: {}; }</code> | An items array with the options of each shortcut |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### disable(...)
+
+```typescript
+disable(options: { ids: string[]; message?: string; }) => any
+```
+
+Disable already published shortcuts.
+Disabled shortcuts are greyed out by the launcher, which offers the user
+the chance to remove them. Pinned shortcuts cannot be removed
+programmatically, so this is the closest removal the platform allows.
+
+| Param         | Type                                        | Description                                                                                                                |
+| ------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ ids: {}; message?: string; }</code> | An option object with the IDs of the shortcuts to disable and the message shown by the launcher when one of them is tapped |
+
+**Returns:** <code>any</code>
+
 --------------------
 
 
 ### addListener('shortcut', ...)
 
 ```typescript
-addListener(eventName: 'shortcut', listenerFunc: (response: { data: string; }) => void) => Promise<PluginListenerHandle>
+addListener(eventName: 'shortcut', listenerFunc: (response: { data: string; }) => void) => any
 ```
 
 Add a listener to a shortcut tap event
@@ -170,7 +236,7 @@ Add a listener to a shortcut tap event
 | **`eventName`**    | <code>'shortcut'</code>                               |
 | **`listenerFunc`** | <code>(response: { data: string; }) =&gt; void</code> |
 
-**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+**Returns:** <code>any</code>
 
 --------------------
 
@@ -178,10 +244,12 @@ Add a listener to a shortcut tap event
 ### removeAllListeners()
 
 ```typescript
-removeAllListeners() => Promise<void>
+removeAllListeners() => any
 ```
 
 Removes all listeners.
+
+**Returns:** <code>any</code>
 
 --------------------
 
@@ -202,9 +270,9 @@ Removes all listeners.
 
 #### PluginListenerHandle
 
-| Prop         | Type                                      |
-| ------------ | ----------------------------------------- |
-| **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
+| Prop         | Type                      |
+| ------------ | ------------------------- |
+| **`remove`** | <code>() =&gt; any</code> |
 
 
 ### Type Aliases

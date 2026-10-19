@@ -20,6 +20,14 @@ export class AndroidShortcutsWeb
     console.error("Method 'add' not implemented.", options);
     return Promise.reject("Method 'add' not implemented.") as any;
   }
+  update(options: { items: ShortcutItem[] }): Promise<void> {
+    console.error("Method 'update' not implemented.", JSON.stringify(options));
+    return Promise.reject("Method 'update' not implemented.") as any;
+  }
+  disable(options: { ids: string[]; message?: string }): Promise<void> {
+    console.error("Method 'disable' not implemented.", JSON.stringify(options));
+    return Promise.reject("Method 'disable' not implemented.") as any;
+  }
   addListener(
     eventName: 'shortcut',
     listenerFunc: (response: { data: string }) => void,

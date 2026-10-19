@@ -1,0 +1,246 @@
+{
+  "api": {
+    "name": "AndroidShortcutsPlugin",
+    "slug": "androidshortcutsplugin",
+    "docs": "",
+    "tags": [],
+    "methods": [
+      {
+        "name": "isDynamicSupported",
+        "signature": "() => any",
+        "parameters": [],
+        "returns": "any",
+        "tags": [],
+        "docs": "Checks if dynamic shortcuts are supported on the device",
+        "complexTypes": [],
+        "slug": "isdynamicsupported"
+      },
+      {
+        "name": "isPinnedSupported",
+        "signature": "() => any",
+        "parameters": [],
+        "returns": "any",
+        "tags": [],
+        "docs": "Checks if pinned shortcuts are supported on the device",
+        "complexTypes": [],
+        "slug": "ispinnedsupported"
+      },
+      {
+        "name": "setDynamic",
+        "signature": "(options: { items: ShortcutItem[]; }) => any",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "An items array with the options of each shortcut",
+            "type": "{ items: {}; }"
+          }
+        ],
+        "returns": "any",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options An items array with the options of each shortcut"
+          }
+        ],
+        "docs": "Set dynamic shortcuts",
+        "complexTypes": [
+          "ShortcutItem"
+        ],
+        "slug": "setdynamic"
+      },
+      {
+        "name": "pin",
+        "signature": "(options: ShortcutItem) => any",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "An option object for the pinned shortcut",
+            "type": "ShortcutItem"
+          }
+        ],
+        "returns": "any",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options An option object for the pinned shortcut"
+          }
+        ],
+        "docs": "Add a pinned shortcut",
+        "complexTypes": [
+          "ShortcutItem"
+        ],
+        "slug": "pin"
+      },
+      {
+        "name": "update",
+        "signature": "(options: { items: ShortcutItem[]; }) => any",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "An items array with the options of each shortcut",
+            "type": "{ items: {}; }"
+          }
+        ],
+        "returns": "any",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options An items array with the options of each shortcut"
+          }
+        ],
+        "docs": "Update already published shortcuts, keeping the same IDs.\nShortcuts that are not published yet are ignored by the system.",
+        "complexTypes": [
+          "ShortcutItem"
+        ],
+        "slug": "update"
+      },
+      {
+        "name": "disable",
+        "signature": "(options: { ids: string[]; message?: string; }) => any",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "An option object with the IDs of the shortcuts to disable\nand the message shown by the launcher when one of them is tapped",
+            "type": "{ ids: {}; message?: string | undefined; }"
+          }
+        ],
+        "returns": "any",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options An option object with the IDs of the shortcuts to disable\nand the message shown by the launcher when one of them is tapped"
+          }
+        ],
+        "docs": "Disable already published shortcuts.\nDisabled shortcuts are greyed out by the launcher, which offers the user\nthe chance to remove them. Pinned shortcuts cannot be removed\nprogrammatically, so this is the closest removal the platform allows.",
+        "complexTypes": [],
+        "slug": "disable"
+      },
+      {
+        "name": "addListener",
+        "signature": "(eventName: 'shortcut', listenerFunc: (response: { data: string; }) => void) => any",
+        "parameters": [
+          {
+            "name": "eventName",
+            "docs": "",
+            "type": "'shortcut'"
+          },
+          {
+            "name": "listenerFunc",
+            "docs": "",
+            "type": "(response: { data: string; }) => void"
+          }
+        ],
+        "returns": "any",
+        "tags": [
+          {
+            "name": "param",
+            "text": "eventName"
+          },
+          {
+            "name": "param",
+            "text": "listenerFunc"
+          }
+        ],
+        "docs": "Add a listener to a shortcut tap event",
+        "complexTypes": [
+          "PluginListenerHandle"
+        ],
+        "slug": "addlistenershortcut-"
+      },
+      {
+        "name": "removeAllListeners",
+        "signature": "() => any",
+        "parameters": [],
+        "returns": "any",
+        "tags": [],
+        "docs": "Removes all listeners.",
+        "complexTypes": [],
+        "slug": "removealllisteners"
+      }
+    ],
+    "properties": []
+  },
+  "interfaces": [
+    {
+      "name": "ShortcutItem",
+      "slug": "shortcutitem",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "id",
+          "tags": [],
+          "docs": "ID of the shortcut",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "shortLabel",
+          "tags": [],
+          "docs": "Sets the short title of a shortcut.\nThis is a mandatory field when publishing a new shortcut with ShortcutManager.addDynamicShortcuts(List) or ShortcutManager.setDynamicShortcuts(List).\nThis field is intended to be a concise description of a shortcut.\nThe recommended maximum length is 10 characters.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "longLabel",
+          "tags": [],
+          "docs": "Sets the text of a shortcut.\nThis field is intended to be more descriptive than the shortcut title. The launcher shows this instead of the short title when it has enough space.\nThe recommend maximum length is 25 characters.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "icon",
+          "tags": [],
+          "docs": "Defines the icon of the shortcut.\nYou can set the icon as a BASE64-Bitmap or as a Resource name",
+          "complexTypes": [
+            "AvailableIconTypes"
+          ],
+          "type": "{ type: AvailableIconTypes; name: string; } | undefined"
+        },
+        {
+          "name": "data",
+          "tags": [],
+          "docs": "Data that is passed to the 'shortcut' event",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "PluginListenerHandle",
+      "slug": "pluginlistenerhandle",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "remove",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "() => any"
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "typeAliases": [
+    {
+      "name": "AvailableIconTypes",
+      "slug": "availableicontypes",
+      "docs": "",
+      "types": [
+        {
+          "text": "'Bitmap'",
+          "complexTypes": []
+        },
+        {
+          "text": "'Resource'",
+          "complexTypes": []
+        }
+      ]
+    }
+  ],
+  "pluginConfigs": []
+}
